@@ -17,10 +17,10 @@
 
 	"entrypoints": {
 		"main": [
-			"com.MyEconomySystemSupport.MyEconomySystem"
+			"com.myEconomySystemSupport.MyEconomySystemSupport"
 		],
 		"client": [
-			"com.MyEconomySystemSupport.MyEconomySystemClient"
+			"com.myEconomySystemSupport.MyEconomySystemSupportClient"
 		]
 	},
 	"depends": {

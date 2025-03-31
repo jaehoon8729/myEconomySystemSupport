@@ -1,0 +1,5 @@
+{
+  "item.myEconomySystemSupport.random_item": "랜덤 아이템",
+  "item.myEconomySystemSupport.random_item.success": "랜덤 아이템에서 %d개의 %s을(를) 얻었습니다!",
+  "itemGroup.myEconomySystemSupport.group": "랜덤 아이템 모드"
+}
