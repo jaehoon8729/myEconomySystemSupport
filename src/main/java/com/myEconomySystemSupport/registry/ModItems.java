@@ -11,6 +11,6 @@ public class ModItems {
     public static final Item RANDOM_ITEM = new RandomItem(new Item.Settings().maxCount(1));
 
     public static void registerItems() {
-        Registry.register(Registries.ITEM, Identifier.of(MyEconomySystemSupport.MOD_ID, "random_item"), RANDOM_ITEM);
+        Registry.register(Registries.ITEM, Identifier.of(MyEconomySystemSupport.MOD_ID, "myEconomySystemSupport"), RANDOM_ITEM);
     }
 }

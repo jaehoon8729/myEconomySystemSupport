@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MyEconomySystemSupport implements ModInitializer {
-    public static final String MOD_ID = "randomitem";
+    public static final String MOD_ID = "myeconomysystemsupport";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     @Override

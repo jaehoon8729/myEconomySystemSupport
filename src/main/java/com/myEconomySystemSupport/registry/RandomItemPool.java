@@ -86,7 +86,7 @@ public class RandomItemPool {
 
     private static void createDefaultItemPoolFile() {
         try {
-            File dataDir = new File("config/randomitem");
+            File dataDir = new File("config/myEconomySystemSupport");
             if (!dataDir.exists()) {
                 dataDir.mkdirs();
             }

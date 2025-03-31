@@ -1,6 +1,6 @@
 {
 	"schemaVersion": 1,
-	"id": "MyEconomySystemSupport",
+	"id": "myeconomysystemsupport",
 	"version": "${version}",
 	"name": "MyEconomySystemSupport",
 	"description": "마인크래프트 서버용 골드 경제 시스템",
@@ -12,7 +12,7 @@
 		"sources": "https://github.com/FabricMC/fabric-example-mod"
 	},
 	"license": "CC0-1.0",
-	"icon": "assets/modid/icon.png",
+	"icon": "assets/myeconomysystemsupport/icon.png",
 	"environment": "*",
 
 	"entrypoints": {
