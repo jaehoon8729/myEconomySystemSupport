@@ -18,7 +18,7 @@ public class RandomItem extends Item {
     private static final Random random = new Random();
 
     public RandomItem(Settings settings) {
-        super(settings.rarity(Rarity.RARE));
+        super(settings);
     }
 
     @Override
@@ -41,7 +41,7 @@ public class RandomItem extends Item {
                 0.5f, 0.4f / (random.nextFloat() * 0.4f + 0.8f));
 
         // 메시지 출력
-        player.sendMessage(Text.translatable("item.myEconomySystemSupport.random_item.success",
+        player.sendMessage(Text.translatable("item.myeconomysystemsupport.random_item.success",
                 randomItemStack.getCount(),
                 randomItemStack.getName()), false);
 
