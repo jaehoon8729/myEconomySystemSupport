@@ -24,11 +24,15 @@ import java.io.InputStreamReader;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class RandomItemPool {
     private static final List<ItemEntry> ITEM_POOL = new ArrayList<>();
+    // 아이템별 공지 여부를 저장하는 맵
+    private static final Map<String, Boolean> BROADCAST_ITEMS = new HashMap<>();
     private static final Random random = new Random();
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
@@ -44,6 +48,7 @@ public class RandomItemPool {
                     @Override
                     public void reload(ResourceManager manager) {
                         ITEM_POOL.clear();
+                        BROADCAST_ITEMS.clear();
 
                         boolean defaultResourceFound = false;
 
@@ -95,21 +100,26 @@ public class RandomItemPool {
             if (!defaultPoolFile.exists()) {
                 JsonArray itemsArray = new JsonArray();
 
-                addDefaultItemToJson(itemsArray, "minecraft:diamond", 1, 3, 5);
-                addDefaultItemToJson(itemsArray, "minecraft:iron_ingot", 1, 5, 15);
-                addDefaultItemToJson(itemsArray, "minecraft:gold_ingot", 1, 3, 10);
-                addDefaultItemToJson(itemsArray, "minecraft:emerald", 1, 2, 5);
-                addDefaultItemToJson(itemsArray, "minecraft:ender_pearl", 1, 2, 8);
-                addDefaultItemToJson(itemsArray, "minecraft:experience_bottle", 1, 3, 10);
-                addDefaultItemToJson(itemsArray, "minecraft:cooked_beef", 1, 8, 20);
-                addDefaultItemToJson(itemsArray, "minecraft:apple", 1, 3, 15);
-                addDefaultItemToJson(itemsArray, "minecraft:golden_apple", 1, 1, 3);
-                addDefaultItemToJson(itemsArray, "minecraft:enchanted_golden_apple", 1, 1, 1);
-                addDefaultItemToJson(itemsArray, "minecraft:netherite_ingot", 1, 1, 1);
-                addDefaultItemToJson(itemsArray, "minecraft:diamond_sword", 1, 1, 3);
-                addDefaultItemToJson(itemsArray, "minecraft:diamond_pickaxe", 1, 1, 3);
-                addDefaultItemToJson(itemsArray, "minecraft:oak_log", 1, 16, 20);
-                addDefaultItemToJson(itemsArray, "minecraft:stone", 1, 16, 25);
+                // 일반 아이템 (공지 없음)
+                addDefaultItemToJson(itemsArray, "minecraft:diamond", 1, 3, 5, false);
+                addDefaultItemToJson(itemsArray, "minecraft:iron_ingot", 1, 5, 15, false);
+                addDefaultItemToJson(itemsArray, "minecraft:gold_ingot", 1, 3, 10, false);
+                addDefaultItemToJson(itemsArray, "minecraft:emerald", 1, 2, 5, false);
+                addDefaultItemToJson(itemsArray, "minecraft:ender_pearl", 1, 2, 8, false);
+                addDefaultItemToJson(itemsArray, "minecraft:experience_bottle", 1, 3, 10, false);
+                addDefaultItemToJson(itemsArray, "minecraft:cooked_beef", 1, 8, 20, false);
+                addDefaultItemToJson(itemsArray, "minecraft:apple", 1, 3, 15, false);
+
+                // 희귀 아이템 (전체 공지)
+                addDefaultItemToJson(itemsArray, "minecraft:golden_apple", 1, 1, 3, true);
+                addDefaultItemToJson(itemsArray, "minecraft:enchanted_golden_apple", 1, 1, 1, true);
+                addDefaultItemToJson(itemsArray, "minecraft:netherite_ingot", 1, 1, 1, true);
+                addDefaultItemToJson(itemsArray, "minecraft:diamond_sword", 1, 1, 3, true);
+                addDefaultItemToJson(itemsArray, "minecraft:diamond_pickaxe", 1, 1, 3, true);
+
+                // 일반 아이템
+                addDefaultItemToJson(itemsArray, "minecraft:oak_log", 1, 16, 20, false);
+                addDefaultItemToJson(itemsArray, "minecraft:stone", 1, 16, 25, false);
 
                 JsonObject rootObject = new JsonObject();
                 rootObject.add("items", itemsArray);
@@ -125,12 +135,13 @@ public class RandomItemPool {
         }
     }
 
-    private static void addDefaultItemToJson(JsonArray array, String itemId, int minCount, int maxCount, int weight) {
+    private static void addDefaultItemToJson(JsonArray array, String itemId, int minCount, int maxCount, int weight, boolean broadcastOnGet) {
         JsonObject itemObject = new JsonObject();
         itemObject.addProperty("item", itemId);
         itemObject.addProperty("min_count", minCount);
         itemObject.addProperty("max_count", maxCount);
         itemObject.addProperty("weight", weight);
+        itemObject.addProperty("broadcast", broadcastOnGet ? "Y" : "N");
         array.add(itemObject);
     }
 
@@ -147,11 +158,20 @@ public class RandomItemPool {
                         int maxCount = itemObject.get("max_count").getAsInt();
                         int weight = itemObject.get("weight").getAsInt();
 
+                        // 공지 여부 속성 (기본값: N)
+                        boolean broadcastOnGet = false;
+                        if (itemObject.has("broadcast")) {
+                            String broadcastValue = itemObject.get("broadcast").getAsString();
+                            broadcastOnGet = "Y".equalsIgnoreCase(broadcastValue);
+                        }
+
                         Identifier identifier = Identifier.of(itemId);
                         Item item = Registries.ITEM.get(identifier);
 
                         if (item != Items.AIR) {
-                            addItem(item, minCount, maxCount, weight);
+                            addItem(item, minCount, maxCount, weight, broadcastOnGet);
+                            // 공지 여부를 맵에 저장
+                            BROADCAST_ITEMS.put(itemId, broadcastOnGet);
                         } else {
                             MyEconomySystemSupport.LOGGER.warn("아이템을 찾을 수 없음: " + itemId);
                         }
@@ -169,9 +189,10 @@ public class RandomItemPool {
      * @param minCount 최소 개수
      * @param maxCount 최대 개수
      * @param weight 가중치 (높을수록 더 자주 등장)
+     * @param broadcastOnGet 획득 시 전체 공지 여부
      */
-    public static void addItem(Item item, int minCount, int maxCount, int weight) {
-        ITEM_POOL.add(new ItemEntry(item, minCount, maxCount, weight));
+    public static void addItem(Item item, int minCount, int maxCount, int weight, boolean broadcastOnGet) {
+        ITEM_POOL.add(new ItemEntry(item, minCount, maxCount, weight, broadcastOnGet));
     }
 
     /**
@@ -199,12 +220,26 @@ public class RandomItemPool {
                 if (entry.maxCount > entry.minCount) {
                     count += random.nextInt(entry.maxCount - entry.minCount + 1);
                 }
-                return new ItemStack(entry.item, count);
+
+                // 기본 아이템스택 생성
+                ItemStack result = new ItemStack(entry.item, count);
+
+                return result;
             }
         }
 
         // 기본값 (오류 방지용)
         return new ItemStack(Items.APPLE);
+    }
+
+    /**
+     * 아이템이 전체 공지 대상인지 확인
+     * @param item 확인할 아이템
+     * @return 전체 공지 대상이면 true
+     */
+    public static boolean shouldBroadcast(ItemStack item) {
+        String itemId = Registries.ITEM.getId(item.getItem()).toString();
+        return BROADCAST_ITEMS.getOrDefault(itemId, false);
     }
 
     // 아이템 엔트리 클래스
@@ -213,12 +248,14 @@ public class RandomItemPool {
         final int minCount;
         final int maxCount;
         final int weight;
+        final boolean broadcastOnGet;
 
-        ItemEntry(Item item, int minCount, int maxCount, int weight) {
+        ItemEntry(Item item, int minCount, int maxCount, int weight, boolean broadcastOnGet) {
             this.item = item;
             this.minCount = minCount;
             this.maxCount = maxCount;
             this.weight = weight;
+            this.broadcastOnGet = broadcastOnGet;
         }
     }
 }

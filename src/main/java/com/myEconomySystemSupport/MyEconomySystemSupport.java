@@ -1,5 +1,6 @@
 package com.myEconomySystemSupport;
 
+import com.myEconomySystemSupport.config.ModConfig;
 import com.myEconomySystemSupport.registry.ModItems;
 import com.myEconomySystemSupport.registry.RandomItemPool;
 import net.fabricmc.api.ModInitializer;
@@ -16,6 +17,10 @@ public class MyEconomySystemSupport implements ModInitializer {
     @Override
     public void onInitialize() {
         try {
+            // 설정 초기화
+            ModConfig.init();
+            LOGGER.info("설정 초기화 완료");
+
             // 아이템 등록
             ModItems.registerItems();
             LOGGER.info("아이템 등록 완료: {}", ModItems.RANDOM_ITEM);
@@ -30,7 +35,7 @@ public class MyEconomySystemSupport implements ModInitializer {
             });
             LOGGER.info("아이템 그룹 등록 완료");
 
-            LOGGER.info("Random Item Mod 초기화 완료!");
+            LOGGER.info("MyEconomySystemSupport 모드 초기화 완료!");
         } catch (Exception e) {
             LOGGER.error("모드 초기화 중 오류 발생: ", e);
         }
