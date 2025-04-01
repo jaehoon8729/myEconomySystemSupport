@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "myEconomySystemSupport:item/random_item"
+    "layer0": "myeconomysystemsupport:item/random_item"
   }
 }
