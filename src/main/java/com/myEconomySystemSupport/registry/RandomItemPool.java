@@ -141,7 +141,8 @@ public class RandomItemPool {
         itemObject.addProperty("min_count", minCount);
         itemObject.addProperty("max_count", maxCount);
         itemObject.addProperty("weight", weight);
-        itemObject.addProperty("broadcast", broadcastOnGet ? "Y" : "N");
+        // "broadcast" 대신 "notice" 필드 사용
+        itemObject.addProperty("notice", broadcastOnGet ? "true" : "false");
         array.add(itemObject);
     }
 
@@ -158,9 +159,16 @@ public class RandomItemPool {
                         int maxCount = itemObject.get("max_count").getAsInt();
                         int weight = itemObject.get("weight").getAsInt();
 
-                        // 공지 여부 속성 (기본값: N)
+                        // 공지 여부 속성 (기본값: false)
                         boolean broadcastOnGet = false;
-                        if (itemObject.has("broadcast")) {
+
+                        // "notice" 필드 확인
+                        if (itemObject.has("notice")) {
+                            String noticeValue = itemObject.get("notice").getAsString();
+                            broadcastOnGet = "true".equalsIgnoreCase(noticeValue);
+                        }
+                        // 이전 버전 호환성을 위해 "broadcast" 필드도 확인
+                        else if (itemObject.has("broadcast")) {
                             String broadcastValue = itemObject.get("broadcast").getAsString();
                             broadcastOnGet = "Y".equalsIgnoreCase(broadcastValue);
                         }
