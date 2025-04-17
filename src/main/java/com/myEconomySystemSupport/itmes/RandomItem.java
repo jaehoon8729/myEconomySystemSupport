@@ -12,7 +12,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Rarity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.world.World;
 
@@ -105,6 +104,11 @@ public class RandomItem extends Item {
                 // 로그에도 기록
                 MyEconomySystemSupport.LOGGER.info("전체 공지: {}", broadcastMsg.replaceAll("§[0-9a-fklmnor]", ""));
             }
+        }
+
+        // 아이템 사용 후 수량 감소 (1개 소모)
+        if (!player.getAbilities().creativeMode) {
+            stack.decrement(1);
         }
 
         return ActionResult.SUCCESS;

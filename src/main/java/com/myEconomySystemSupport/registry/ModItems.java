@@ -20,7 +20,7 @@ public class ModItems {
     // 아이템 설정에 레지스트리 키 포함
     public static final Item RANDOM_ITEM = new RandomItem(
             new Item.Settings()
-                    .maxCount(1)
+                    .maxCount(64)
                     .rarity(Rarity.RARE)
                     .registryKey(RANDOM_ITEM_KEY)
     );
