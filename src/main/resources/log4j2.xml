@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <!-- 이 설정은 에러 로그만 출력하도록 합니다 -->
+    <Loggers>
+        <!-- 모드 로거 설정 - 에러 레벨 이상만 로깅 -->
+        <Logger name="myeconomysystemsupport" level="error" additivity="true">
+            <!-- additivity를 true로 설정하여 루트 로거(마인크래프트 서버 로그)에도 로깅되도록 함 -->
+        </Logger>
+    </Loggers>
+</Configuration>
