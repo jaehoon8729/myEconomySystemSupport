@@ -12,7 +12,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ActionResult;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 import java.util.Random;
@@ -25,11 +25,11 @@ public class RandomItem extends Item {
     }
 
     @Override
-    public ActionResult use(World world, PlayerEntity player, Hand hand) {
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
 
         // 클라이언트 측에서는 처리하지 않음
-        if (world.isClient) return ActionResult.PASS;
+        if (world.isClient) return TypedActionResult.pass(stack);
 
         // 랜덤 아이템 생성
         ItemStack randomItemStack = RandomItemPool.getRandomItem();
@@ -111,6 +111,6 @@ public class RandomItem extends Item {
             stack.decrement(1);
         }
 
-        return ActionResult.SUCCESS;
+        return TypedActionResult.success(stack, world.isClient());
     }
 }
